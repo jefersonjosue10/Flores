@@ -1,0 +1,500 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
+  <title>Para Lucía 🌻</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Caveat:wght@600;700&family=Montserrat:wght@400;500;600;700&family=Playfair+Display:ital,wght@0,600;1,600&display=swap" rel="stylesheet">
+  
+  <style>
+    :root {
+      --gold: #f59e0b;
+      --gold-light: #fbbf24;
+      --sunflower-center: #3e2723;
+      --bg-dark: #12100e;
+    }
+
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+      user-select: none;
+      -webkit-tap-highlight-color: transparent;
+    }
+
+    body, html {
+      width: 100%;
+      height: 100%;
+      overflow: hidden;
+      font-family: 'Montserrat', sans-serif;
+      background-color: var(--bg-dark);
+      color: #ffffff;
+    }
+
+    #canvas-container {
+      position: absolute;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      z-index: 1;
+      background: radial-gradient(circle at center, #2a1f11 0%, #0d0a07 100%);
+    }
+
+    canvas {
+      display: block;
+      width: 100%;
+      height: 100%;
+    }
+
+    .ui-layer {
+      position: absolute;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      z-index: 10;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      padding: 20px;
+      pointer-events: none;
+    }
+
+    .card-screen {
+      pointer-events: auto;
+      width: 100%;
+      max-width: 420px;
+      background: rgba(25, 20, 15, 0.65);
+      backdrop-filter: blur(16px);
+      -webkit-backdrop-filter: blur(16px);
+      border: 1px solid rgba(251, 191, 36, 0.3);
+      border-radius: 28px;
+      padding: 32px 24px;
+      text-align: center;
+      box-shadow: 0 20px 50px rgba(0, 0, 0, 0.6),
+                  0 0 30px rgba(245, 158, 11, 0.15);
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 20px;
+      opacity: 0;
+      transform: translateY(20px) scale(0.95);
+      transition: opacity 0.6s cubic-bezier(0.16, 1, 0.3, 1),
+                  transform 0.6s cubic-bezier(0.16, 1, 0.3, 1);
+      position: absolute;
+      visibility: hidden;
+    }
+
+    .card-screen.active {
+      opacity: 1;
+      transform: translateY(0) scale(1);
+      visibility: visible;
+    }
+
+    /* SOBRE INTERACTIVO */
+    .envelope-wrapper {
+      cursor: pointer;
+      perspective: 1000px;
+      margin-bottom: 10px;
+    }
+
+    .envelope {
+      width: 220px;
+      height: 150px;
+      background: #e0a93b;
+      background: linear-gradient(135deg, #f59e0b 0%, #b45309 100%);
+      border-radius: 12px;
+      position: relative;
+      box-shadow: 0 15px 35px rgba(0,0,0,0.5), 0 0 15px rgba(245, 158, 11, 0.4);
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      transition: transform 0.3s ease;
+    }
+
+    .envelope:hover {
+      transform: scale(1.03);
+    }
+
+    .envelope-label {
+      background: rgba(255, 255, 255, 0.92);
+      padding: 10px 20px;
+      border-radius: 8px;
+      box-shadow: 0 4px 10px rgba(0,0,0,0.2);
+      border: 1px dashed #d97706;
+    }
+
+    .envelope-label span {
+      font-family: 'Caveat', cursive;
+      font-size: 1.8rem;
+      color: #78350f;
+      font-weight: 700;
+      display: block;
+    }
+
+    .badge-tag {
+      background: rgba(245, 158, 11, 0.2);
+      border: 1px solid rgba(251, 191, 36, 0.4);
+      color: var(--gold-light);
+      padding: 6px 16px;
+      border-radius: 20px;
+      font-size: 0.8rem;
+      font-weight: 600;
+      text-transform: uppercase;
+      letter-spacing: 1.5px;
+    }
+
+    h1.title-main {
+      font-family: 'Playfair Display', serif;
+      font-size: 2.2rem;
+      color: #fff;
+      line-height: 1.2;
+      text-shadow: 0 2px 10px rgba(0,0,0,0.5);
+    }
+
+    h1.title-main span {
+      color: var(--gold-light);
+      display: block;
+      font-style: italic;
+    }
+
+    .subtitle {
+      font-size: 0.95rem;
+      color: #d1d5db;
+      line-height: 1.5;
+      font-weight: 400;
+    }
+
+    .dedication-text {
+      font-family: 'Caveat', cursive;
+      font-size: 1.55rem;
+      line-height: 1.45;
+      color: #fef3c7;
+      text-align: center;
+      background: rgba(0, 0, 0, 0.25);
+      padding: 18px 16px;
+      border-radius: 16px;
+      border-left: 3px solid var(--gold-light);
+      max-height: 260px;
+      overflow-y: auto;
+    }
+
+    /* BOTONES */
+    .btn-action {
+      background: linear-gradient(135deg, #f59e0b 0%, #d97706 100%);
+      color: #fff;
+      border: none;
+      padding: 14px 28px;
+      font-size: 0.95rem;
+      font-weight: 600;
+      border-radius: 50px;
+      cursor: pointer;
+      box-shadow: 0 8px 20px rgba(245, 158, 11, 0.35);
+      transition: all 0.2s ease;
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      text-transform: uppercase;
+      letter-spacing: 1px;
+    }
+
+    .btn-action:active {
+      transform: scale(0.96);
+      box-shadow: 0 4px 10px rgba(245, 158, 11, 0.2);
+    }
+
+    .btn-secondary {
+      background: rgba(255, 255, 255, 0.1);
+      border: 1px solid rgba(255, 255, 255, 0.2);
+      color: #e5e7eb;
+      box-shadow: none;
+    }
+
+    .indicator-dots {
+      display: flex;
+      gap: 6px;
+      margin-top: 4px;
+    }
+
+    .dot {
+      width: 8px;
+      height: 8px;
+      border-radius: 50%;
+      background: rgba(255, 255, 255, 0.2);
+      transition: background 0.3s ease;
+    }
+
+    .dot.active {
+      background: var(--gold-light);
+      width: 20px;
+      border-radius: 10px;
+    }
+  </style>
+</head>
+<body>
+
+  <div id="canvas-container">
+    <canvas id="sunflower-canvas"></canvas>
+  </div>
+
+  <div class="ui-layer">
+    
+    <!-- PANTALLA 1: SOBRE INICIAL -->
+    <div class="card-screen active" id="screen-1">
+      <div class="badge-tag">Un detalle especial</div>
+      
+      <div class="envelope-wrapper" onclick="goToScreen(2)">
+        <div class="envelope">
+          <div class="envelope-label">
+            <span>Para: Lucía</span>
+          </div>
+        </div>
+      </div>
+
+      <h1 class="title-main">Tengo algo <span>especial para ti...</span></h1>
+      <p class="subtitle">Toca el sobre o el botón de abajo para abrir este mensaje preparado con mucho cariño.</p>
+      
+      <button class="btn-action" onclick="goToScreen(2)">
+        Abrir Sobre 🌻
+      </button>
+
+      <div class="indicator-dots">
+        <div class="dot active"></div>
+        <div class="dot"></div>
+        <div class="dot"></div>
+      </div>
+    </div>
+
+    <!-- PANTALLA 2: DESEO DE FELIZ DÍA -->
+    <div class="card-screen" id="screen-2">
+      <div class="badge-tag">Para ti</div>
+      
+      <h1 class="title-main">¡Que tengas un <span>Feliz y Radiante Día!</span></h1>
+      
+      <p class="subtitle">
+        Que este pequeño detalle ilumine tu día tanto como tú iluminas el de las personas que te rodean.
+      </p>
+
+      <button class="btn-action" onclick="goToScreen(3)">
+        Ver Dedicatoria ✨
+      </button>
+
+      <div class="indicator-dots">
+        <div class="dot"></div>
+        <div class="dot active"></div>
+        <div class="dot"></div>
+      </div>
+    </div>
+
+    <!-- PANTALLA 3: DEDICATORIA PERSONALIZADA -->
+    <div class="card-screen" id="screen-3">
+      <div class="badge-tag">De todo corazón</div>
+      
+      <div class="dedication-text">
+        "En este dia, te quiero dedicar este detalle, ya que no he podido darte unas de verdad y decirte que no sabes como lo siento haberte dañado de la forma en que lo hice y te agradezco por tener confianza como la que tienes conmigo y de verdad aprecio esto, de nuevo gracias y disfruta las flores virtuales"
+      </div>
+
+      <button class="btn-action" onclick="burstSunflowers()">
+        Más Girasoles 🌻
+      </button>
+
+      <div class="indicator-dots">
+        <div class="dot"></div>
+        <div class="dot"></div>
+        <div class="dot active"></div>
+      </div>
+    </div>
+
+  </div>
+
+  <script>
+    // --- CANVAS ANIMACIÓN GIRASOLES & PARTÍCULAS ---
+    const canvas = document.getElementById('sunflower-canvas');
+    const ctx = canvas.getContext('2d');
+
+    let width, height;
+    let sunflowers = [];
+    let sparkles = [];
+    const maxSunflowers = 35;
+
+    function resizeCanvas() {
+      width = canvas.width = window.innerWidth;
+      height = canvas.height = window.innerHeight;
+    }
+    window.addEventListener('resize', resizeCanvas);
+    resizeCanvas();
+
+    // Dibujar Gráfico de Girasol
+    function drawSunflowerGraphic(size) {
+      const offCanvas = document.createElement('canvas');
+      offCanvas.width = size;
+      offCanvas.height = size;
+      const offCtx = offCanvas.getContext('2d');
+      const center = size / 2;
+      const radius = size * 0.18;
+      const petalCount = 12;
+
+      // Pétalos
+      offCtx.save();
+      offCtx.translate(center, center);
+      for (let i = 0; i < petalCount; i++) {
+        offCtx.rotate((Math.PI * 2) / petalCount);
+        offCtx.beginPath();
+        offCtx.ellipse(0, -radius * 1.8, radius * 0.45, radius * 1.1, 0, 0, Math.PI * 2);
+        
+        const grad = offCtx.createLinearGradient(0, -radius, 0, -radius * 2.8);
+        grad.addColorStop(0, '#f59e0b');
+        grad.addColorStop(0.7, '#fbbf24');
+        grad.addColorStop(1, '#fef08a');
+        
+        offCtx.fillStyle = grad;
+        offCtx.fill();
+      }
+      offCtx.restore();
+
+      // Centro del Girasol
+      offCtx.beginPath();
+      offCtx.arc(center, center, radius, 0, Math.PI * 2);
+      const centerGrad = offCtx.createRadialGradient(center, center, radius * 0.2, center, center, radius);
+      centerGrad.addColorStop(0, '#54260d');
+      centerGrad.addColorStop(1, '#271206');
+      offCtx.fillStyle = centerGrad;
+      offCtx.fill();
+
+      // Borde Centro
+      offCtx.strokeStyle = 'rgba(245, 158, 11, 0.4)';
+      offCtx.lineWidth = 1.5;
+      offCtx.stroke();
+
+      return offCanvas;
+    }
+
+    const sunflowerSprite = drawSunflowerGraphic(80);
+
+    class Sunflower {
+      constructor(isInitial = false) {
+        this.reset(isInitial);
+      }
+
+      reset(isInitial = false) {
+        this.x = Math.random() * width;
+        this.y = isInitial ? Math.random() * height : -60;
+        this.size = Math.random() * 30 + 25;
+        this.speedY = Math.random() * 1.2 + 0.8;
+        this.speedX = Math.sin(Math.random() * Math.PI) * 0.6;
+        this.rotation = Math.random() * Math.PI * 2;
+        this.rotationSpeed = (Math.random() - 0.5) * 0.02;
+        this.oscillation = Math.random() * Math.PI * 2;
+        this.oscillationSpeed = Math.random() * 0.02 + 0.01;
+        this.opacity = Math.random() * 0.5 + 0.5;
+      }
+
+      update() {
+        this.y += this.speedY;
+        this.oscillation += this.oscillationSpeed;
+        this.x += Math.sin(this.oscillation) * 0.8 + this.speedX;
+        this.rotation += this.rotationSpeed;
+
+        if (this.y > height + 60) {
+          this.reset(false);
+        }
+      }
+
+      draw() {
+        ctx.save();
+        ctx.translate(this.x, this.y);
+        ctx.rotate(this.rotation);
+        ctx.globalAlpha = this.opacity;
+        ctx.drawImage(sunflowerSprite, -this.size / 2, -this.size / 2, this.size, this.size);
+        ctx.restore();
+      }
+    }
+
+    class Sparkle {
+      constructor() {
+        this.reset();
+      }
+
+      reset() {
+        this.x = Math.random() * width;
+        this.y = Math.random() * height;
+        this.size = Math.random() * 3 + 1;
+        this.alpha = Math.random();
+        this.speedAlpha = Math.random() * 0.02 + 0.005;
+      }
+
+      update() {
+        this.alpha += this.speedAlpha;
+        if (this.alpha > 1 || this.alpha < 0) {
+          this.speedAlpha = -this.speedAlpha;
+        }
+      }
+
+      draw() {
+        ctx.save();
+        ctx.globalAlpha = Math.max(0, this.alpha);
+        ctx.fillStyle = '#fbbf24';
+        ctx.beginPath();
+        ctx.arc(this.x, this.y, this.size, 0, Math.PI * 2);
+        ctx.fill();
+        ctx.restore();
+      }
+    }
+
+    // Inicializar Partículas
+    for (let i = 0; i < maxSunflowers; i++) {
+      sunflowers.push(new Sunflower(true));
+    }
+    for (let i = 0; i < 40; i++) {
+      sparkles.push(new Sparkle());
+    }
+
+    function animate() {
+      ctx.clearRect(0, 0, width, height);
+
+      sparkles.forEach(s => {
+        s.update();
+        s.draw();
+      });
+
+      sunflowers.forEach(sf => {
+        sf.update();
+        sf.draw();
+      });
+
+      requestAnimationFrame(animate);
+    }
+    animate();
+
+    // Ráfaga extra de girasoles
+    function burstSunflowers() {
+      for (let i = 0; i < 15; i++) {
+        let sf = new Sunflower(false);
+        sf.y = -20 - Math.random() * 100;
+        sf.speedY += 1.5;
+        sunflowers.push(sf);
+      }
+    }
+
+    // --- CAMBIO DE PANTALLAS ---
+    function goToScreen(screenNumber) {
+      document.querySelectorAll('.card-screen').forEach(s => s.classList.remove('active'));
+      const nextScreen = document.getElementById(`screen-${screenNumber}`);
+      if (nextScreen) {
+        nextScreen.classList.add('active');
+        burstSunflowers();
+      }
+    }
+
+    // Interacción al tocar la pantalla fuera de la tarjeta
+    window.addEventListener('click', (e) => {
+      if (e.target.tagName !== 'BUTTON' && !e.target.closest('.card-screen')) {
+        burstSunflowers();
+      }
+    });
+  </script>
+</body>
+</html>
